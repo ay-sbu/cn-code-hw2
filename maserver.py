@@ -58,6 +58,14 @@ def message_controller(user_index, command):
         message = MaMessage(ins[1], users[user_index].username, datetime.now().hour)
         users[user_index].chats[chat_index].messages.append(message)
 
+        for i in range(len(users)):
+            if user_index != i:
+                for j in range(len(users[i].chats)):
+                    if users[i].chats[j].name == users[user_index].chats[chat_index].name:
+                        msg = 'notif' + seperator + users[i].username + ': ' + message.content
+                        users_sockets[i].send(msg.encode())
+
+
 # ----------------------------------------------------------- handle client
 def main_page_handler(user_index):
     global users
