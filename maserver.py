@@ -37,7 +37,7 @@ def do_sign_up(username, password):
 
     for i in range(len(users)):
         if i != user_index:
-            newchat = MaChat(users[user_index].username + '&' + users[i].username, 'pv', [])
+            newchat = MaChat(users[user_index].username + '&' + users[i].username, 'pv', users[i].isBusy, [])
             users[user_index].chats.append(newchat)
             users[i].chats.append(newchat)
 
@@ -45,15 +45,21 @@ def do_sign_up(username, password):
 
 # ----------------------------------------------------------- message sender
 def message_controller(user_index, command):
+    global users
     ins = command.split(seperator)
 
     chat_index = int(ins[0])
-    message = MaMessage(ins[1], users[user_index].username)
-    users[user_index].chats[chat_index].messages.append(message)
 
+    if users[user_index].chats[chat_index].isBusy:
+        msg = 'notif' + seperator + 'chat is busy!'
+        users_sockets[user_index].send(msg.encode())
+    else:
+        message = MaMessage(ins[1], users[user_index].username)
+        users[user_index].chats[chat_index].messages.append(message)
 
 # ----------------------------------------------------------- handle client
 def main_page_handler(user_index):
+    global users
     users_sockets[user_index] = connection_socket
     users_sockets[user_index].recv(1024)
     user_data = users[user_index].to_json()
@@ -65,10 +71,18 @@ def main_page_handler(user_index):
         user_data = 'user_data' + seperator + users[user_index].to_json()
         users_sockets[user_index].send(user_data.encode())
 
-        # sending messages or back or continue
+        # sending messages or message_like
         command = users_sockets[user_index].recv(1024)
         command = command.decode()
-        if command != 'back' and command != 'continue':
+        if command == 'toggle_busy':
+            print('i am here')
+            users[user_index].isBusy = not users[user_index].isBusy
+            for i in range(len(users[user_index].chats)):
+                users[user_index].chats[i].isBusy = not users[user_index].chats[i].isBusy
+        elif command == 'message_like':
+            continue
+        else:
+            print('command', command)
             message_controller(user_index, command)
 
 def first_page_handler(connection_socket, addr):
@@ -115,7 +129,7 @@ def first_page_handler(connection_socket, addr):
 # ----------------------------------------------------------- main
 if __name__ == '__main__':
     server_ip = '127.0.0.1'
-    server_port = 12_033
+    server_port = 12_038
 
     server_socket = socket(AF_INET, SOCK_STREAM)
     server_socket.bind((server_ip, server_port))

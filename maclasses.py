@@ -28,15 +28,17 @@ class MaUser:
         return cls(username, password, isBusy, chats)
 
 class MaChat:
-    def __init__(self, name, chat_type, messages):
+    def __init__(self, name, chat_type, isBusy, messages):
         self.name = name
         self.type = chat_type
+        self.isBusy = isBusy
         self.messages = messages
 
     def to_json(self):
         data = {
             'name': self.name,
             'type': self.type,
+            'isBusy': self.isBusy,
             'messages': [i.to_json() for i in self.messages]
         }
         return json.dumps(data)
@@ -46,9 +48,10 @@ class MaChat:
         data = json.loads(json_data)
         name = data['name']
         chat_type = data['type']
+        isBusy = data['isBusy']
         messages_data = data['messages']
         messages = [MaMessage.from_json(i) for i in messages_data]
-        return cls(name, chat_type, messages)
+        return cls(name, chat_type, isBusy, messages)
 
 class MaMessage():
     def __init__(self, content, sender_name):

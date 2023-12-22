@@ -38,10 +38,10 @@ def chat_page(chat_index):
         if command == 'exit':
             exit_page()
         elif command == 'back':
-            client_socket.send('back'.encode())
+            client_socket.send('message_like'.encode())
             break
         elif command == '':
-            client_socket.send('continue'.encode())
+            client_socket.send('message_like'.encode())
             continue
 
         chat_page_controller(command, chat_index)
@@ -52,8 +52,11 @@ def main_page_view():
     print()
     print('MAIN PAGE')
     print('username: ' + current_user.username + ', ' + 'isBusy: ' + str(current_user.isBusy))
-    print('Choose between chats by name: ')
+    print()
+    print('- toggle is_busy (toggle)')
     print('- send to all (all)')
+    print()
+    print('chats:')
 
     for i in range(len(current_user.chats)):
         print('-', current_user.chats[i].name)
@@ -62,13 +65,16 @@ def main_page_view():
 
 def main_page_controller(command):
     global current_user
-    client_socket.send('continue'.encode())
-    for i in range(len(current_user.chats)):
-        if command == current_user.chats[i].name:
-            chat_page(i)
-            break
+    if command == 'toggle':
+        client_socket.send('toggle_busy'.encode())
     else:
-        print('chat not found?!')
+        client_socket.send('message_like'.encode())
+        for i in range(len(current_user.chats)):
+            if command == current_user.chats[i].name:
+                chat_page(i)
+                break
+        else:
+            print('chat not found?!')
 
 def main_page():
     global current_user
@@ -107,6 +113,8 @@ def receive_messages_controller(command):
     ins = command.split(seperator)
     if ins[0] == 'user_data':
         current_user = MaUser.from_json(ins[1])
+    elif ins[0] == 'notif':
+        print('notif:', ins[1])
 
 def receive_messages():
     # this thread is called just when user signed in successfully
@@ -218,7 +226,7 @@ def first_page():
 # ----------------------------------------------------------- main
 if __name__ == '__main__':
     server_ip = '127.0.0.1'
-    server_port = 12_033
+    server_port = 12_038
 
     client_socket = socket(AF_INET, SOCK_STREAM)
     client_socket.connect((server_ip, server_port))
