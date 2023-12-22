@@ -54,18 +54,20 @@ class MaChat:
         return cls(name, chat_type, isBusy, messages)
 
 class MaMessage():
-    def __init__(self, content, sender_name):
+    def __init__(self, content, sender_name, hour):
         self.content = content
         self.sender_name = sender_name
+        self.hour = hour
 
     def to_json(self):
         data = {
             'content': self.content,
-            'sender_name': self.sender_name
+            'sender_name': self.sender_name,
+            'hour': self.hour
         }
         return json.dumps(data)
 
     @classmethod
     def from_json(cls, json_data):
         data = json.loads(json_data)
-        return cls(data['content'], data['sender_name'])
+        return cls(data['content'], data['sender_name'], data['hour'])

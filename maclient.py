@@ -22,18 +22,19 @@ def chat_page_view(chat_index):
     current_chat = current_user.chats[chat_index]
     for i in range(len(current_chat.messages)):
         messagei = current_chat.messages[i]
-        print(messagei.sender_name + ': ' + messagei.content)
+        print(str(messagei.hour) + ' - ' + messagei.sender_name + ': ' + messagei.content)
 
 def chat_page_controller(command, chat_index):
     msg = str(chat_index) + seperator + command
     client_socket.send(msg.encode())
 
 def chat_page(chat_index):
+    global current_user
     while True:
         client_socket.send('update_user'.encode())
         chat_page_view(chat_index)
 
-        command = input('> ')
+        command = input(current_user.username + ': ')
 
         if command == 'exit':
             exit_page()
@@ -229,7 +230,7 @@ def first_page():
 # ----------------------------------------------------------- main
 if __name__ == '__main__':
     server_ip = '127.0.0.1'
-    server_port = 12_038
+    server_port = 12_042
 
     client_socket = socket(AF_INET, SOCK_STREAM)
     client_socket.connect((server_ip, server_port))

@@ -1,5 +1,6 @@
 from socket import *
 import threading
+from datetime import datetime
 from maclasses import MaUser, MaChat, MaMessage
 
 null = 'null'
@@ -54,7 +55,7 @@ def message_controller(user_index, command):
         msg = 'notif' + seperator + 'chat is busy!'
         users_sockets[user_index].send(msg.encode())
     else:
-        message = MaMessage(ins[1], users[user_index].username)
+        message = MaMessage(ins[1], users[user_index].username, datetime.now().hour)
         users[user_index].chats[chat_index].messages.append(message)
 
 # ----------------------------------------------------------- handle client
@@ -139,7 +140,7 @@ def first_page_handler(connection_socket, addr):
 # ----------------------------------------------------------- main
 if __name__ == '__main__':
     server_ip = '127.0.0.1'
-    server_port = 12_038
+    server_port = 12_042
 
     server_socket = socket(AF_INET, SOCK_STREAM)
     server_socket.bind((server_ip, server_port))
