@@ -54,6 +54,7 @@ def main_page_view():
     print('username: ' + current_user.username + ', ' + 'isBusy: ' + str(current_user.isBusy))
     print()
     print('- toggle is_busy (toggle)')
+    print('- new group (newgroup;<group_name>;<username1>;<username2> ...)')
     print('- send to all (all)')
     print()
     print('chats:')
@@ -67,6 +68,8 @@ def main_page_controller(command):
     global current_user
     if command == 'toggle':
         client_socket.send('toggle_busy'.encode())
+    elif command[:len('newgroup')] == 'newgroup':
+        client_socket.send(command.encode())
     else:
         client_socket.send('message_like'.encode())
         for i in range(len(current_user.chats)):

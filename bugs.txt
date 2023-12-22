@@ -1,2 +1,7 @@
-- server exiting client
-- 
+bugs:
+  - server exiting client
+  - entering sockets bugs
+
+todos:
+  - group feature
+  - notif feature

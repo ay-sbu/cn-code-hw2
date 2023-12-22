@@ -79,6 +79,16 @@ def main_page_handler(user_index):
             users[user_index].isBusy = not users[user_index].isBusy
             for i in range(len(users[user_index].chats)):
                 users[user_index].chats[i].isBusy = not users[user_index].chats[i].isBusy
+        elif command[:len('newgroup')] == 'newgroup':
+            # TODO: error in bad input not handled
+            ins = command.split(seperator)
+            ins.pop(0)
+            newchat = MaChat(ins.pop(0), 'group', False, [])
+            for i in range(len(ins)):
+                for j in range(len(users)):
+                    if ins[i] == users[j].username:
+                        users[j].chats.append(newchat)
+
         elif command == 'message_like':
             continue
         else:
